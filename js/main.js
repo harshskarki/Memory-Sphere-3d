@@ -2,9 +2,9 @@
 // The Orchestrator: Wires the modules together and runs the loop
 import TWEEN from '@tweenjs/tween.js';
 import { STATE } from './state.js';
-import { initEngine, scene, camera, renderer, controls, particlesMesh } from './engine.js';
+import { initEngine, scene, camera, renderer, controls, updateGalaxy } from './engine.js'; 
 import { initGlobe, globeGroup, filterGlobe } from './globe.js';
-import { initInteractions } from './interaction.js';
+import { initInteractions, raycaster } from './interaction.js'; 
 import { initUI } from './ui.js';
 import { loadSavedMemories, handleFileUpload } from './storage.js';
 import { initAudio, audioReady, ambientHum } from './audio.js';
@@ -51,10 +51,8 @@ function animate(time) {
 
     controls.update();
 
-    if (particlesMesh) {
-        particlesMesh.rotation.y += 0.0003;
-        particlesMesh.rotation.x += 0.0001;
-    }
+    // THIS IS THE MAGIC LINE WE CHANGED
+    updateGalaxy(raycaster);
     
     globeGroup.children.forEach(mesh => {
         if (mesh.material.userData && mesh.material.userData.shader) {

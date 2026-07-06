@@ -8,10 +8,12 @@ import { globeGroup, filterGlobe } from './globe.js';
 import { playSwish, playClick } from './audio.js';
 import * as UI from './ui.js';
 
-let raycaster, mouse, pointerDownPos;
+// 1. WE EXPORT AND CREATE THE RAYCASTER RIGHT HERE
+export const raycaster = new THREE.Raycaster(); 
+let mouse, pointerDownPos;
 
 export function initInteractions() {
-    raycaster = new THREE.Raycaster();
+    // 2. WE DELETED THE OLD RAYCASTER LINE FROM IN HERE
     mouse = new THREE.Vector2();
     pointerDownPos = new THREE.Vector2();
 

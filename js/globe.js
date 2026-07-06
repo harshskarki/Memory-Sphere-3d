@@ -52,7 +52,7 @@ function buildFibonacciSphere() {
         const lookVec = new THREE.Vector3(x, y, z).normalize().multiplyScalar(radius * 2);
         mesh.lookAt(lookVec);
 
-        const locations = ['Tokyo', 'Paris', 'New York', 'London', 'Kyoto'];
+        const locations = ['Maharashtra', 'Rajasthan', 'Kerala', 'Uttarakhand', 'Goa'];
         const baseTag = STATE.userTextures.length > 0 ? 'uploaded memory photo' : 'memory note';
         const searchString = `${baseTag} ${i + 1} ${locations[i % locations.length]}`.toLowerCase();
 

@@ -11,13 +11,13 @@ export function showCaption(id, isUserImage) {
         capDate.innerText = `UPLOADED MEMORY`;
         capDesc.innerText = 'A personal photo loaded securely from your device. It has been wrapped in our hand-drawn graphic recording frame.';
     } else {
-        const locations = ['Tokyo, Japan', 'Paris, France', 'New York, USA', 'London, UK', 'Kyoto, Japan'];
+        const locations = ['Mumbai, Maharashtra', 'Jaipur, Rajasthan', 'Munnar, Kerala', 'Pithoragarh, Uttarakhand', 'Vagator, Goa'];
         const notes = [
-            'An incredible day exploring the hidden alleys and trying local street food.',
-            'A quiet afternoon spent wandering around. Caught the sunset just in time.',
-            'Unforgettable moments with great company. We walked for miles.',
-            'Found this amazing little coffee spot completely by accident.',
-            'One of the most exhausting but rewarding hikes.'
+            'An incredible day exploring the bustling streets and trying local vada pav.',
+            'A quiet afternoon spent wandering around the majestic forts and palaces.',
+            'Unforgettable moments cruising through the peaceful green backwaters.',
+            'Found this amazing little Maggie point in the snowy mountains completely by accident.',
+            'Relaxing by the beach with great company and incredible coastal seafood.'
         ];
         capTitle.innerText = `Note #${id + 1}`;
         capDate.innerText = `AUG ${(id % 28) + 1}, 202${(id % 4) + 1} • ${locations[id % locations.length]}`;

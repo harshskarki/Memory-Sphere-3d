@@ -91,8 +91,9 @@ export function createProceduralTexture(index) {
     ctx.fillText(`Memory ${index + 1}`, size / 2, size / 2 - 25);
     
     ctx.font = 'bold 35px "Space Grotesk", sans-serif';
-    ctx.fillStyle = '#ffffff'; 
-    const locations = ['Tokyo', 'Paris', 'New York', 'London', 'Kyoto'];
+    ctx.fillStyle = '#ffffff';
+    const locations = ['Maharashtra', 'Rajasthan', 'Kerala', 'Uttarakhand', 'Goa'];
+    
     ctx.fillText(locations[index % locations.length].toUpperCase(), size / 2, size / 2 + 35);
 
     const texture = new THREE.CanvasTexture(canvas);

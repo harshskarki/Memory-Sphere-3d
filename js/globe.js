@@ -52,12 +52,20 @@ function buildFibonacciSphere() {
         const lookVec = new THREE.Vector3(x, y, z).normalize().multiplyScalar(radius * 2);
         mesh.lookAt(lookVec);
 
-        const locations = ['Maharashtra', 'Rajasthan', 'Kerala', 'Uttarakhand', 'Goa'];
-        const baseTag = STATE.userTextures.length > 0 ? 'uploaded memory photo' : 'memory note';
-        const searchString = `${baseTag} ${i + 1} ${locations[i % locations.length]}`.toLowerCase();
+        const isUserImg = STATE.userTextures.length > 0;
+        let searchString = "";
+
+        if (isUserImg && STATE.userMetadata[i]) {
+            const meta = STATE.userMetadata[i];
+            searchString = `${meta.title} ${meta.location} ${meta.date}`.toLowerCase();
+        } else {
+            const locations = ['Maharashtra', 'Rajasthan', 'Kerala', 'Uttarakhand', 'Goa'];
+            const baseTag = isUserImg ? 'uploaded memory photo' : 'memory note';
+            searchString = `${baseTag} ${i + 1} ${locations[i % locations.length]}`.toLowerCase();
+        }
 
         mesh.userData = { 
-            id: i, originalPosition: mesh.position.clone(), isUserImage: STATE.userTextures.length > 0,
+            id: i, originalPosition: mesh.position.clone(), isUserImage: isUserImg,
             searchTags: searchString, isFaded: false, hoverIntensity: 0
         };
 

@@ -5,6 +5,7 @@ import { STATE } from './state.js';
 import { initEngine, scene, camera, renderer, controls, particlesMesh } from './engine.js';
 import { initGlobe, globeGroup, filterGlobe } from './globe.js';
 import { initInteractions } from './interaction.js';
+import { initUI } from './ui.js';
 import { loadSavedMemories, handleFileUpload } from './storage.js';
 import { initAudio, audioReady, ambientHum } from './audio.js';
 
@@ -13,6 +14,7 @@ document.fonts.ready.then(() => {
     initEngine();
     initGlobe();
     initInteractions();
+    initUI();
     
     const searchInput = document.getElementById('search-input');
     if (searchInput) {

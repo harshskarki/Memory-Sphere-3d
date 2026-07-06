@@ -1,5 +1,6 @@
 // 📄 js/state.js
 // Centralized state manager to prevent circular dependencies
+// 📄 js/state.js
 export const CONFIG = {
     radius: 300,
     imageCount: 90,
@@ -16,5 +17,6 @@ export const STATE = {
     userHasDragged: false,
     userHasClicked: false,
     userTextures: [],
+    userMetadata: [], // <-- ADD THIS LINE
     currentSearchTerm: ""
 };

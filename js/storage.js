@@ -1,5 +1,4 @@
 // 📄 js/storage.js
-// Handles reading/writing the user's images directly to the browser
 import { get, set } from 'idb-keyval';
 import { CONFIG, STATE } from './state.js';
 import { rebuildGlobe } from './globe.js';
@@ -9,9 +8,12 @@ import * as UI from './ui.js';
 export async function loadSavedMemories() {
     try {
         const savedFiles = await get('globe_photos');
+        const savedMeta = await get('globe_metadata'); // Pull text from database
+        
         if (savedFiles && savedFiles.length > 0) {
             UI.showLoading("Restoring memory...");
             STATE.userTextures = []; 
+            STATE.userMetadata = savedMeta || []; 
             
             for (let i = 0; i < savedFiles.length; i++) {
                 document.getElementById('loading-text').innerText = `Restoring memory ${i + 1} of ${savedFiles.length}`;
@@ -23,6 +25,16 @@ export async function loadSavedMemories() {
                 
                 const texture = createUserImageTexture(img, i);
                 STATE.userTextures.push(texture);
+                
+                // If text is missing, create a default template
+                if (!STATE.userMetadata[i]) {
+                    STATE.userMetadata[i] = {
+                        title: `Photo #${i + 1}`,
+                        date: new Date().toLocaleDateString(),
+                        location: 'Uploaded Memory',
+                        desc: 'A personal photo loaded securely from your device. Click the pencil icon to edit this caption.'
+                    };
+                }
             }
 
             document.getElementById('loading-text').innerText = `Rebuilding the 3D Sphere...`;
@@ -46,6 +58,7 @@ export async function handleFileUpload(event) {
 
     UI.showLoading("Preparing photos...");
     STATE.userTextures = []; 
+    STATE.userMetadata = []; // Clear old metadata on fresh upload
     
     for (let i = 0; i < files.length; i++) {
         document.getElementById('loading-text').innerText = `Preparing photo ${i + 1} of ${files.length}`;
@@ -57,7 +70,18 @@ export async function handleFileUpload(event) {
         
         const texture = createUserImageTexture(img, i);
         STATE.userTextures.push(texture);
+        
+        // Generate defaults for new files
+        STATE.userMetadata.push({
+            title: `Photo #${i + 1}`,
+            date: new Date().toLocaleDateString(),
+            location: 'Uploaded Memory',
+            desc: 'A personal photo loaded securely from your device. Click the pencil icon above to add your own story.'
+        });
     }
+    
+    // Save defaults to database immediately
+    await set('globe_metadata', STATE.userMetadata);
 
     document.getElementById('loading-text').innerText = `Building the 3D Sphere...`;
     CONFIG.imageCount = STATE.userTextures.length;

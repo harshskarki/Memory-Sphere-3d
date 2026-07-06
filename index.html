@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>3D Interactive Photo Globe</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="./css/style.css">
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/",
+                "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@18.6.4/dist/tween.esm.js",
+                "idb-keyval": "https://unpkg.com/idb-keyval@6.2.1/dist/index.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="loading-overlay" class="fixed inset-0 bg-[#0d1117]/90 backdrop-blur-md z-50 flex flex-col items-center justify-center opacity-0 pointer-events-none transition-opacity duration-700">
+        <svg class="w-24 h-24 mb-6 animate-[spin_4s_linear_infinite]" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path class="sketch-path" d="M 50,10 C 75,12 90,30 88,55 C 85,80 60,95 35,88 C 10,80 5,50 15,30 C 25,10 50,8 50,10" fill="none" stroke="#2dd4bf" stroke-width="4" stroke-linecap="round"/>
+            <path class="sketch-path" d="M 45,15 C 65,18 80,35 78,55 C 75,75 55,85 35,80 C 15,75 12,50 20,35 C 28,20 45,15 45,15" fill="none" stroke="#fb923c" stroke-width="3" stroke-linecap="round" style="animation-delay: 0.5s;"/>
+        </svg>
+        <h2 class="text-4xl font-bold text-teal-300 font-hand tracking-wider mb-2">Sketching memories...</h2>
+        <p id="loading-text" class="text-orange-300 text-lg font-bold tracking-wider uppercase">Processing photos</p>
+    </div>
+
+    <div id="ghost-prompts" class="absolute inset-0 pointer-events-none z-20 flex items-center justify-center">
+        <div id="prompt-drag" class="absolute top-[65%] text-teal-300 flex flex-col items-center float-anim transition-all duration-1000 opacity-80">
+            <svg width="120" height="40" viewBox="0 0 120 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 15,20 Q 60,5 105,20 M 15,20 L 25,10 M 15,20 L 25,30 M 105,20 L 95,10 M 105,20 L 95,30" />
+            </svg>
+            <span class="font-hand text-3xl mt-2 drop-shadow-md">Drag to spin</span>
+        </div>
+        
+        <div id="prompt-click" class="absolute top-[35%] right-[20%] md:right-[30%] text-orange-400 flex flex-col items-center float-anim transition-all duration-1000 opacity-80" style="animation-delay: 1s;">
+            <span class="font-hand text-3xl mb-1 drop-shadow-md">Click a memory</span>
+            <svg width="40" height="60" viewBox="0 0 40 60" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M 20,10 L 20,50 M 20,50 L 10,40 M 20,50 L 30,40" />
+            </svg>
+        </div>
+    </div>
+
+    <div id="ui-layer">
+        <div id="top-ui-block" class="text-center w-full mt-4 transition-all duration-500">
+            <h1 class="text-4xl md:text-6xl font-bold text-teal-400 tracking-tight drop-shadow-lg">Memory Sphere</h1>
+            
+            <div class="mt-6 flex flex-col md:flex-row items-center justify-center gap-4 pointer-events-auto">
+                <input type="text" id="search-input" placeholder="Search (e.g., Paris, 5)" class="px-4 py-2 w-64 rounded-full bg-white/10 border-2 border-teal-400/50 text-white placeholder-teal-200/70 focus:outline-none focus:border-teal-300 backdrop-blur-sm font-hand text-xl tracking-wider transition-all shadow-lg">
+                
+                <label id="upload-label" for="file-upload" class="cursor-pointer bg-orange-500/80 hover:bg-orange-400 text-white px-5 py-2 rounded-full font-bold tracking-wide backdrop-blur-sm transition-all flex items-center gap-2 border border-orange-300/50 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                    Upload Photos
+                </label>
+                <input id="file-upload" type="file" multiple accept="image/*" class="hidden" />
+            </div>
+        </div>
+
+        <button id="back-btn" class="absolute bottom-10 left-1/2 transform -translate-x-1/2 bg-teal-500/80 hover:bg-teal-400 text-white px-8 py-3 rounded-full font-bold tracking-widest uppercase backdrop-blur-sm shadow-[0_0_15px_rgba(45,212,191,0.5)] border border-teal-300/50 opacity-0 pointer-events-none transition-all duration-500 interactive-btn z-50">
+            ← Back to Globe
+        </button>
+
+        <div id="caption-panel" class="absolute right-10 top-1/2 transform -translate-y-1/2 w-80 bg-[#0d1117]/80 backdrop-blur-md border-l-4 border-orange-400 p-6 rounded-r-xl shadow-2xl opacity-0 pointer-events-none transition-all duration-700 interactive-btn translate-x-10 z-40 hidden md:block">
+            <h3 id="caption-title" class="text-3xl font-hand text-teal-300 mb-1">Memory</h3>
+            <p id="caption-date" class="text-xs font-bold text-orange-300 tracking-widest uppercase mb-4 opacity-80">Date • Location</p>
+            <p id="caption-desc" class="text-slate-200 text-sm leading-relaxed">Description goes here.</p>
+        </div>
+    </div>
+
+    <div id="webgl-container"></div>
+
+    <script type="module" src="./js/main.js"></script>
+</body>
+</html>
